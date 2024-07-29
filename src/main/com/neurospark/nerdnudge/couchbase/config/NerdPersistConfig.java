@@ -6,7 +6,7 @@ import com.couchbase.client.java.env.ClusterEnvironment;
 import java.time.Duration;
 
 public class NerdPersistConfig {
-    private static Cluster syncCluster;
+    public static Cluster syncCluster;
     private static AsyncCluster asyncCluster;
 
     private static String persistAddress;

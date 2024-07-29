@@ -3,7 +3,9 @@ package com.neurospark.nerdnudge.couchbase.testers;
 import com.google.gson.JsonObject;
 import com.neurospark.nerdnudge.couchbase.service.NerdPersistClient;
 
-public class CouchbaseTester {
+import java.util.List;
+
+public class NerdPersistTester {
     public static void main(String[] args) {
         NerdPersistClient nerdPersistClient = new NerdPersistClient("localhost", "Administrator",
                 "sift123", "test", "_default", "_default");
@@ -36,5 +38,13 @@ public class CouchbaseTester {
 
         nerdPersistClient.delete( "testId1" );
         nerdPersistClient.delete( "testId100" );
+
+        System.out.println("---------------");
+
+        String collectionName = "sde";
+        List<JsonObject> objects = nerdPersistClient.getDocumentsByQuery("SELECT * FROM `content`.`quizflex`.`" + collectionName + "`", collectionName);
+        for(JsonObject jsonObject: objects) {
+            System.out.println(jsonObject);
+        }
     }
 }

@@ -7,17 +7,23 @@ import com.couchbase.client.java.kv.DecrementOptions;
 import com.couchbase.client.java.kv.GetOptions;
 import com.couchbase.client.java.kv.IncrementOptions;
 import com.couchbase.client.java.kv.UpsertOptions;
+import com.couchbase.client.java.query.QueryOptions;
+import com.couchbase.client.java.query.QueryResult;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.neurospark.nerdnudge.couchbase.config.NerdPersistConfig;
 import com.neurospark.nerdnudge.couchbase.utils.GsonSerializer;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NerdPersistClient implements NerdPersist {
 
     private AsyncCollection asyncCollection;
     private Collection syncCollection;
     private JsonTranscoder transcoder;
+    private JsonParser jsonParser;
 
     public NerdPersistClient(final String persistAddress, final String persistUsername, final String persistPassword, final String bucketName, final String scopeName, final String collectionName) {
         NerdPersistConfig.init(persistAddress, persistUsername, persistPassword, bucketName, scopeName, collectionName);
@@ -26,6 +32,7 @@ public class NerdPersistClient implements NerdPersist {
 
         GsonSerializer serializer = new GsonSerializer();
         transcoder = JsonTranscoder.create(serializer);
+        jsonParser = new JsonParser();
     }
 
     public void set(String id, int expiry, JsonObject data) {
@@ -85,5 +92,14 @@ public class NerdPersistClient implements NerdPersist {
 
     public void decr(String key, int factor, int expiry) {
         asyncCollection.binary().decrement(key, DecrementOptions.decrementOptions().initial(0).delta(factor).expiry(Duration.ofSeconds(expiry)));
+    }
+
+    public List<JsonObject> getDocumentsByQuery(String query, String collectionName) {
+        QueryResult result = NerdPersistConfig.syncCluster.query(query, QueryOptions.queryOptions());
+        List<JsonObject> list = new ArrayList<>();
+        for (com.couchbase.client.java.json.JsonObject row : result.rowsAsObject()) {
+            list.add(jsonParser.parse(row.get(collectionName).toString()).getAsJsonObject());
+        }
+        return list;
     }
 }
