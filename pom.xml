@@ -6,6 +6,7 @@
   <version>1.0-SNAPSHOT</version>
   <name>Archetype - nn-persist</name>
   <url>http://maven.apache.org</url>
+
   <dependencies>
     <dependency>
       <groupId>com.couchbase.client</groupId>
@@ -13,11 +14,12 @@
       <version>3.6.0</version>
     </dependency>
     <dependency>
-      <groupId>com.google.gson</groupId>
+      <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
-      <version>2.2.2</version>
+      <version>2.8.0</version>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <plugin>
@@ -49,9 +51,24 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
         <configuration>
-          <source>8</source>
-          <target>8</target>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>lib/</classpathPrefix>
+              <mainClass>java.com.neurospark.nerdnudge.couchbase.MainClass</mainClass> <!-- Adjust this if you have a main class -->
+            </manifest>
+          </archive>
         </configuration>
       </plugin>
     </plugins>
