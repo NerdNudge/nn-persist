@@ -24,11 +24,13 @@ public class NerdPersistClient implements NerdPersist {
     private Collection syncCollection;
     private JsonTranscoder transcoder;
     private JsonParser jsonParser;
+    private NerdPersistConfig nerdPersistConfig;
 
     public NerdPersistClient(final String persistAddress, final String persistUsername, final String persistPassword, final String bucketName, final String scopeName, final String collectionName) {
-        NerdPersistConfig.init(persistAddress, persistUsername, persistPassword, bucketName, scopeName, collectionName);
-        syncCollection = NerdPersistConfig.getSyncCollection();
-        asyncCollection = NerdPersistConfig.getAsyncCollection();
+        nerdPersistConfig = new NerdPersistConfig();
+        nerdPersistConfig.init(persistAddress, persistUsername, persistPassword, bucketName, scopeName, collectionName);
+        syncCollection = nerdPersistConfig.getSyncCollection();
+        asyncCollection = nerdPersistConfig.getAsyncCollection();
 
         GsonSerializer serializer = new GsonSerializer();
         transcoder = JsonTranscoder.create(serializer);
@@ -95,7 +97,7 @@ public class NerdPersistClient implements NerdPersist {
     }
 
     public List<JsonObject> getDocumentsByQuery(String query, String collectionName) {
-        QueryResult result = NerdPersistConfig.syncCluster.query(query, QueryOptions.queryOptions());
+        QueryResult result = nerdPersistConfig.syncCluster.query(query, QueryOptions.queryOptions());
         List<JsonObject> list = new ArrayList<>();
         for (com.couchbase.client.java.json.JsonObject row : result.rowsAsObject()) {
             list.add(jsonParser.parse(row.get(collectionName).toString()).getAsJsonObject());

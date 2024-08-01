@@ -6,50 +6,50 @@ import com.couchbase.client.java.env.ClusterEnvironment;
 import java.time.Duration;
 
 public class NerdPersistConfig {
-    public static Cluster syncCluster;
-    private static AsyncCluster asyncCluster;
+    public Cluster syncCluster;
+    private AsyncCluster asyncCluster;
 
-    private static String persistAddress;
-    private static String persistUsername;
-    private static String persistPassword;
+    private String persistAddress;
+    private String persistUsername;
+    private String persistPassword;
 
-    private static String bucketName;
-    private static String scopeName;
-    private static String collectionName;
+    private String bucketName;
+    private String scopeName;
+    private String collectionName;
 
-    private static Bucket syncBucket;
-    private static AsyncBucket asyncBucket;
+    private Bucket syncBucket;
+    private AsyncBucket asyncBucket;
 
-    private static AsyncCollection asyncCollection;
+    private AsyncCollection asyncCollection;
 
-    private static Collection syncCollection;
-    private static ClusterEnvironment env;
+    private Collection syncCollection;
+    private ClusterEnvironment env;
 
-     public static void init(final String persistAddress, final String persistUsername, final String persistPassword, final String bucketName, final String scopeName, final String collectionName) {
+    public void init(final String persistAddress, final String persistUsername, final String persistPassword, final String bucketName, final String scopeName, final String collectionName) {
         env = ClusterEnvironment.builder().build();
         System.out.println( "Persist Address: " + persistAddress );
 
-        NerdPersistConfig.persistAddress = persistAddress;
-        NerdPersistConfig.persistUsername = persistUsername;
-        NerdPersistConfig.persistPassword = persistPassword;
+        this.persistAddress = persistAddress;
+        this.persistUsername = persistUsername;
+        this.persistPassword = persistPassword;
 
-        NerdPersistConfig.bucketName = bucketName;
-        NerdPersistConfig.scopeName = scopeName;
-        NerdPersistConfig.collectionName = collectionName;
+        this.bucketName = bucketName;
+        this.scopeName = scopeName;
+        this.collectionName = collectionName;
 
         initializeSyncClusters();
         initializeAsyncClusters();
     }
 
-    private static void initializeSyncClusters() {
+    private void initializeSyncClusters() {
         initializeClusters(true);
     }
 
-    private static void initializeAsyncClusters() {
+    private void initializeAsyncClusters() {
         initializeClusters(false);
     }
 
-    private static void initializeClusters(final boolean sync) {
+    private void initializeClusters(final boolean sync) {
         if(sync) {
             if(syncCluster == null) {
                 initializeSyncCluster();
@@ -66,39 +66,39 @@ public class NerdPersistConfig {
         }
     }
 
-    private static void initializeSyncCluster() {
+    private void initializeSyncCluster() {
         syncCluster = Cluster.connect(persistAddress, persistUsername, persistPassword);
     }
 
-    private static void initializeSyncBucket() {
+    private void initializeSyncBucket() {
         syncBucket = syncCluster.bucket(bucketName);
         syncBucket.waitUntilReady(Duration.ofSeconds(120));
     }
 
-    private static void initializeSyncCollection() {
+    private void initializeSyncCollection() {
         syncCollection = syncBucket.scope(scopeName).collection(collectionName);
         System.out.println( "************************************* Initialised Sync CouchbaseClient ********** " + syncCollection.toString() );
     }
 
-    private static void initializeAsyncCluster() {
+    private void initializeAsyncCluster() {
         asyncCluster = Cluster.connect(persistAddress, ClusterOptions.clusterOptions(persistUsername, persistPassword).environment(env)).async();
     }
 
-    private static void initializeAsyncBucket() {
+    private void initializeAsyncBucket() {
         asyncBucket = asyncCluster.bucket(bucketName);
         asyncBucket.waitUntilReady(Duration.ofSeconds(120));
     }
 
-    private static void initializeAsyncCollection() {
+    private void initializeAsyncCollection() {
         asyncCollection = asyncBucket.scope(scopeName).collection(collectionName);
         System.out.println( "************************************* Initialised Async CouchbaseClient ********** " + asyncCollection.toString() );
     }
 
-    public static AsyncCollection getAsyncCollection() {
+    public AsyncCollection getAsyncCollection() {
         return asyncCollection;
     }
 
-    public static Collection getSyncCollection() {
+    public Collection getSyncCollection() {
         return syncCollection;
     }
 }
