@@ -104,4 +104,8 @@ public class NerdPersistClient implements NerdPersist {
         }
         return list;
     }
+
+    public QueryResult getDocumentsByQuery(String query) {
+        return nerdPersistConfig.syncCluster.query(query, QueryOptions.queryOptions());
+    }
 }
