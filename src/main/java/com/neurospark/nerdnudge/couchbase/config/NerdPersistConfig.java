@@ -2,9 +2,11 @@ package com.neurospark.nerdnudge.couchbase.config;
 
 import com.couchbase.client.java.*;
 import com.couchbase.client.java.env.ClusterEnvironment;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
 
+@Slf4j
 public class NerdPersistConfig {
     public Cluster syncCluster;
     private AsyncCluster asyncCluster;
@@ -27,7 +29,7 @@ public class NerdPersistConfig {
 
     public void init(final String persistAddress, final String persistUsername, final String persistPassword, final String bucketName, final String scopeName, final String collectionName) {
         env = ClusterEnvironment.builder().build();
-        System.out.println( "Persist Address: " + persistAddress );
+        log.info("Persist Address: {}", persistAddress);
 
         this.persistAddress = persistAddress;
         this.persistUsername = persistUsername;
@@ -77,7 +79,7 @@ public class NerdPersistConfig {
 
     private void initializeSyncCollection() {
         syncCollection = syncBucket.scope(scopeName).collection(collectionName);
-        System.out.println( "************************************* Initialised Sync CouchbaseClient ********** " + syncCollection.toString() );
+        log.info( "************************************* Initialised Sync CouchbaseClient ********** {}", syncCollection.toString() );
     }
 
     private void initializeAsyncCluster() {
@@ -91,7 +93,7 @@ public class NerdPersistConfig {
 
     private void initializeAsyncCollection() {
         asyncCollection = asyncBucket.scope(scopeName).collection(collectionName);
-        System.out.println( "************************************* Initialised Async CouchbaseClient ********** " + asyncCollection.toString() );
+        log.info( "************************************* Initialised Async CouchbaseClient ********** {}", asyncCollection.toString() );
     }
 
     public AsyncCollection getAsyncCollection() {

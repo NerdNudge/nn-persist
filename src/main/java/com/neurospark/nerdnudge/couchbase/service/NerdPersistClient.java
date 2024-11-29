@@ -13,11 +13,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.neurospark.nerdnudge.couchbase.config.NerdPersistConfig;
 import com.neurospark.nerdnudge.couchbase.utils.GsonSerializer;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class NerdPersistClient implements NerdPersist {
 
     private AsyncCollection asyncCollection;
@@ -42,7 +44,7 @@ public class NerdPersistClient implements NerdPersist {
             asyncCollection.upsert(id, data, UpsertOptions.upsertOptions().expiry(Duration.ofSeconds(expiry)).transcoder(transcoder));
         }
         catch (Exception e) {
-            System.err.println("Error setting document: " + e.getMessage());
+            log.error("Error setting document: {}, error: {}", id, e.getMessage());
         }
     }
 
@@ -51,7 +53,7 @@ public class NerdPersistClient implements NerdPersist {
             asyncCollection.upsert(id, data, UpsertOptions.upsertOptions().transcoder(transcoder));
         }
         catch (Exception e) {
-            System.err.println("Error setting document: " + e.getMessage());
+            log.error("Error setting document: {}, error: {}", id, e.getMessage());
         }
     }
 
@@ -64,7 +66,7 @@ public class NerdPersistClient implements NerdPersist {
             return syncCollection.get(id, GetOptions.getOptions().transcoder(transcoder)).contentAs(JsonObject.class);
         }
         catch(Exception e) {
-            System.err.println("Error getting document: " + e.getMessage());
+            log.error("Error getting document: {}, error: {}", id, e.getMessage());
             return null;
         }
     }
@@ -75,7 +77,7 @@ public class NerdPersistClient implements NerdPersist {
             counter = syncCollection.get(id).contentAs(Long.class);
         }
         catch (Exception ex) {
-            System.out.println( "Issue getting counter, returning 0: " + id );
+            log.error("Error getting counter: {}", id);
         }
         return counter;
     }
